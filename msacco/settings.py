@@ -9,9 +9,22 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
 from logging import config
 from pathlib import Path
+
+import os
+import environ
+from dotenv import load_dotenv
+load_dotenv()
+
+env=environ.Env()
+environ.Env.read_env()
+
+SECRET_KEY=os.getenv('SECRET_KEY')
+DEBUG=os.getenv('DEBUG')
+DATABASE_URL=os.getenv('DATABASE_URL')
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,10 +34,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(-ri3q339_s2@pq9_!nga2vvbnrdb(h!$5lpvrl$0o6fek_(r*'
+#SECRET_KEY = 'django-insecure-(-ri3q339_s2@pq9_!nga2vvbnrdb(h!$5lpvrl$0o6fek_(r*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -45,8 +58,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     #'socialaccount.socialaccount',
-    'rest_auth',
-    'rest_auth.registration',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
     'sacco',  
     "rest_framework_api_key", 
     'drf_test_generator',
@@ -89,7 +102,7 @@ WSGI_APPLICATION = 'msacco.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'msacco', #change it databasename
@@ -98,13 +111,18 @@ DATABASES = {
         'HOST': 'localhost',  
         'PORT': '5432',           
     },
-    #'test':{
-       # 'NAME':f"test_('msacco')"
+    '''
 
-    #}
-}
-
-
+DATABASES = {
+    'default': {
+        'ENGINE':env('DB_ENGINE'),
+        'NAME': env('DB_NAME'), #change it databasename
+        'USER': env('DB_USER'), #change it database user name
+        'PASSWORD':env('DB_PASSWORD'), # change user database password
+        'HOST':env('DB_HOST'),  
+        'PORT':env('DB_PORT'),           
+    },
+    }
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -168,3 +186,27 @@ AUTHENTICATION_BACKENDS=(
     'django.contrib.auth.backends.ModelBackend',
 )
 #AUTH_USER_MODEL="users.User"
+AUTH_USER_MODEL = 'sacco.CustomUser'
+
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/?verification=1'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/?verification=1'
+SITE_ID = 1
+
+
+'''REST_AUTH_SERIALIZERS={
+    'USER_DETAILS_SERIALIZER':'accounts.serializers.CustomUserDetailsSerializer',
+    'PASSWORD_RESET_SERIALIZER':'accounts.serializers.CustomPasswordResetSerializer',
+}'''
+
+REST_AUTH={
+    'REGISTER_SERIALIZER':'sacco.serializers.CustomRegisterSerializer'
+}
+

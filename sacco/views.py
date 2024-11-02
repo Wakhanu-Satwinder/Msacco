@@ -1,16 +1,16 @@
-
 import datetime
 from typing import Self
 from urllib import request
+from django.db import IntegrityError
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from psutil import STATUS_IDLE
 from rest_framework import viewsets,permissions
 from.serializers import UserSerializer,IndividualSerializer,JointSerializer
 from . import models
-from .models import Individual,Joint
+from .models import CustomUser, Individual,Joint
 from rest_framework.response import Response
 from rest_framework import permissions
 from rest_framework.decorators import action,api_view,permission_classes
@@ -25,21 +25,23 @@ from rest_framework.generics import GenericAPIView,RetrieveAPIView
 from rest_framework import status
 from django.http import HttpResponseRedirect
 
-User=get_user_model()
+#User=get_user_model()
 
 # Create your views here.
+
 class UserViewSet(viewsets.ModelViewSet):
-    model=User
+    model=CustomUser
     serializer_class=UserSerializer
-    queryset=models.User.objects.all()
+    #queryset=models.User.objects.all()
+    queryset=models.CustomUser.objects.all()
     authentication_classes=[SessionAuthentication,BasicAuthentication]
     permission_classes=[IsAuthenticated]
 
     
 class ProfileView(APIView):
-    model=User
+    model=CustomUser
     serializer_class=UserSerializer
-    queryset=models.User.objects.all()
+    queryset=CustomUser.objects.all()
     authentication_classes=[SessionAuthentication,BasicAuthentication]
     permission_classes=[IsAuthenticated]
 
