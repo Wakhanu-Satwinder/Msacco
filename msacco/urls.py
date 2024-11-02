@@ -22,7 +22,7 @@ from rest_framework.routers import DefaultRouter
 #from django.conf.urls import include
 
 router=DefaultRouter()
-router.register(r'users',views.UserViewSet,basename='user')
+#router.register(r'users',views.UserViewSet,basename='user')
 router.register(r'individual',views.IndividualViewSet,basename='individual')
 router.register(r'joint',views.JointViewSet ,basename='joint')
 
