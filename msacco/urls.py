@@ -18,13 +18,20 @@ from django.contrib import admin
 from django.urls import path,include
 from sacco import urls as sacco_urls
 from sacco import views
-from rest_framework.routers import DefaultRouter
+from rest_framework import routers
+from rest_framework.routers import SimpleRouter
+
+
 #from django.conf.urls import include
 
-router=DefaultRouter()
-#router.register(r'users',views.UserViewSet,basename='user')
+
+app_name='sacco'
+#router=DefaultRouter()
+router=routers.SimpleRouter()
+router.register(r'users',views.UserViewSet,basename='customuser')
 router.register(r'individual',views.IndividualViewSet,basename='individual')
-router.register(r'joint',views.JointViewSet ,basename='joint')
+router.register(r'jointleader',views.JointViewSet ,basename='jointleader')
+router.register(r'supervisor',views.Supervisor,basename='supervisor')
 
 
 urlpatterns = [

@@ -10,8 +10,9 @@ from django.urls import reverse
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from .managers import CustomUserManager
-
+from .managers import UserManager
+from rest_framework.authtoken.models import Token
+from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
 
 PURPOSE=(
@@ -39,47 +40,69 @@ MONTHS=(
 
 )
 
+ROLE_CHOICES=[
+        ('individual','individual'),
+        ('joint leader','joint Leader'),
+        ('supervisor','supervisor'),
+]
+
+
 
 class CustomUser(AbstractUser):
+    role=models.CharField(max_length=15,choices=ROLE_CHOICES)
     username = None
     user_id=models.UUIDField(default=uuid.uuid4,editable=False)
     email = models.EmailField(_('email address'), unique=True)
     first_name=models.CharField(max_length=30)
     last_name=models.CharField(max_length=30)
+    #is_admin=models.BooleanField(default=False)
+    #is_individual=models.BooleanField(default=False)
+    #is_jointleader=models.BooleanField(default=False)
+    #is_visitor=models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name','last_name']
-    objects = CustomUserManager()
+    REQUIRED_FIELDS = []
+    objects = UserManager()
 
-    def __str__(self):
-      return self.email
+    class Meta:
+        verbose_name='customuser'
+        verbose_name_plural='customusers'
+
+    '''def get_username(self):
+      return self.email'''
 
     
 
 
 class Individual(models.Model):
-    #first_name=models.CharField(max_length=255)
-    #last_name=models.CharField(max_length=255)
+    
     purpose=models.CharField(max_length=15,choices=PURPOSE,default='Other')
     deposit_amt = models.IntegerField(_('Amt in Ksh'))
     duration_in_months=models.CharField(choices=MONTHS,default='1',max_length=2)
     deposited_on=models.DateTimeField(auto_now_add=True)
-    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.PROTECT,primary_key=True,default=False)
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,primary_key=True,default=False)
     #user=models.ForeignKey(User,on_delete=models.CASCADE,default=False)
     
-    def get_absolute_url(self):
-        return reverse('individual-detail',args=[str(self.id)])
-    '''def __str__(self):
-        return '%s,%s'%(self.last_name,self.first_name)'''
+    '''def get_absolute_url(self):
+        return reverse('individual-detail',args=[str(self.id)])'''
     
+    def __str__(self):
+        return self.user.first_name
     
 
 
-class Joint(models.Model):
+class JointLeader(models.Model):
     partner_first_name=models.CharField(_('partner first name'),max_length=255)
     partner_last_name=models.CharField(('partner last name'),max_length=255)
     joint_amt=models.IntegerField(_('Joint depo in Ksh'),blank=True ,default=False)
     purpose=models.CharField(max_length=15,choices=PURPOSE,default='Other')
     duration_in_months=models.CharField(choices=MONTHS,default='1',max_length=2)
     deposited_on=models.DateTimeField(auto_now_add=True)
-    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,default=False)
-    individual=models.ForeignKey(Individual,on_delete=models.CASCADE,default=False)
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,primary_key=True,default=False)
+    #individual=models.ForeignKey(Individual,on_delete=models.CASCADE,default=False)
+    
+    '''def __str__(self):
+        return self.user.JointLeader.partner_first_name'''
+    
+class Supervisor(models.Model):
+    user=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,primary_key=True,default=False)
+    phone_number=PhoneNumberField(blank=True)
