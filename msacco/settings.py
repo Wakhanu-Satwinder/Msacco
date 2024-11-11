@@ -63,8 +63,11 @@ INSTALLED_APPS = [
     'sacco',  
     "rest_framework_api_key", 
     'drf_test_generator',
+    
 
 ]
+
+PHONENUMBER_DEFAULT_REGION ='KE'
 SITE_ID=1
 
 MIDDLEWARE = [
@@ -75,7 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'allauth.account.middleware.AccountMiddleware',
+    #'allauth.account.middleware.AccountMiddleware',  
 ]
 
 ROOT_URLCONF = 'msacco.urls'
@@ -116,9 +119,9 @@ WSGI_APPLICATION = 'msacco.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE':env('DB_ENGINE'),
-        'NAME': env('DB_NAME'), #change it databasename
-        'USER': env('DB_USER'), #change it database user name
-        'PASSWORD':env('DB_PASSWORD'), # change user database password
+        'NAME': env('DB_NAME'), 
+        'USER': env('DB_USER'), 
+        'PASSWORD':env('DB_PASSWORD'), 
         'HOST':env('DB_HOST'),  
         'PORT':env('DB_PORT'),           
     },
@@ -168,19 +171,24 @@ EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
 
 REST_FRAMEWORK={
     'DEFAULT_AUTHENTICATION_CLASSES':[
-        #'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+
     ],
-    '''DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated'
-    ],'''
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
     'DEFAULT_FILTER_BACKENDS':[
         'django_filters.rest_framework.DjangoFilterBackend'
-    ]
+    ],
 
 }
 
+#REST_USE_JWT=True
+#JWT_AUTH_COOKIE='saco-auth'
 AUTHENTICATION_BACKENDS=(
     'allauth.account.auth_backends.AuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend',
@@ -194,19 +202,14 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+#ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/?verification=1'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/?verification=1'
-SITE_ID = 1
 
-
-'''REST_AUTH_SERIALIZERS={
-    'USER_DETAILS_SERIALIZER':'accounts.serializers.CustomUserDetailsSerializer',
-    'PASSWORD_RESET_SERIALIZER':'accounts.serializers.CustomPasswordResetSerializer',
-}'''
 
 REST_AUTH={
-    'REGISTER_SERIALIZER':'sacco.serializers.CustomRegisterSerializer'
+    'REGISTER_SERIALIZER':'sacco.serializers.CustomRegisterSerializer',
 }
 
+CORS_ORIGIN_ALLOW_ALL=True
